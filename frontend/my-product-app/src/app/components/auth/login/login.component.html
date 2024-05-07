@@ -1,6 +1,30 @@
-<form>
-  <mat-form-field appearance="fill">
-    <mat-label>Enter your email</mat-label>
-    <input matInput placeholder="Ex. pat@example.com" [(ngModel)]="email" />
-  </mat-form-field>
-</form>
+<div class="login-container">
+  <img
+    src="https://avatars.githubusercontent.com/u/124091983"
+    alt="Logo"
+    class="logo"
+  />
+  <div class="login-container">
+    <p class="title">Login</p>
+    <input
+      matInput
+      placeholder="Email"
+      [(ngModel)]="email"
+      name="email"
+      class="input-field"
+    />
+
+    <input
+      matInput
+      placeholder="Password"
+      [(ngModel)]="password"
+      name="password"
+      type="password"
+      class="input-field"
+    />
+
+    <a class="forgot-password" href="/">Forgot your password</a>
+
+    <button mat-raised-button>Login</button>
+  </div>
+</div>

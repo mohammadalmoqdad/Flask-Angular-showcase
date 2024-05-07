@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface User {
-  email: string;
-  password: string;
-}
 
 export interface AuthResponse {
   access_token: string;
@@ -22,20 +15,35 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(user: User): Observable<boolean> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, user).pipe(
-      map((response) => {
-        localStorage.setItem('access_token', response.access_token);
-        return true;
-      })
-    );
+  login(email: string, password: string): Observable<boolean> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(
+        map((response: AuthResponse) => {
+          this.setToken(response.access_token);
+          return true;
+        }),
+        catchError((error) => {
+          console.error('Login failed:', error);
+          return throwError(() => new Error('Login failed'));
+        })
+      );
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
+    return !!this.getToken();
   }
 
-  getToken(): any {
+  getToken(): string | null {
     return localStorage.getItem('access_token');
+  }
+
+  isUserAuthenticated(): Observable<boolean> {
+    const isAuthenticated = !!this.getToken();
+    return of(isAuthenticated);
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem('access_token', token);
   }
 }
